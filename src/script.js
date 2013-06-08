@@ -1,24 +1,28 @@
 $(document).ready(function() {
 
-	$('button').click(function() {
-		var text = $("textarea").val();
+	$("#btSummarize").click(function() {
+		//Cleaning the results
+		$("#results ul").empty();
+		
+		var text = $("#source").val();
 		var summarize = new AutomaticSummarizer();
-		var weights = summarize.summarize(text);		
+		var sentences = summarize.summarize(text);		
 
-		var words = Object.keys(weights).sort(function(a, b) {
-			return weights[a] > weights[b] ? -1 : weights[a] < weights[b] ? 1 : 0;
-		});
-
-		$.each(words, function() {
-			$('#results ul').append("<li>" + this + " - " + weights[this] + "</li>");
-		});
+		for(var i = 0; i < sentences.length; i++){
+			var sentence = sentences[i];
+			$("#results ul").append("<li>" + sentence.sentence + " - " + sentence.weight + "</li>");
+		}		
 	});
 });
 
 /* ***************************************** */
-/* ********** AutomaticSummarizer ********** */
+/* 				AUTOMATICSUMMARIZER 		 */
 /* ***************************************** */
 function AutomaticSummarizer() {
+
+	/* ************************************ */
+	/*			PRIVATE FUNCTIONS			*/			
+	/* ************************************ */
 	this.itemize = function(text) {
 		//Regexp for itemize
 		var regex = /([a-zA-Z_ñáéíóú][a-zA-Z_ñáéíóú']*[a-zA-Z_ñáéíóú]|[a-zA-Z_ñáéíóú])/g;
@@ -69,6 +73,27 @@ function AutomaticSummarizer() {
 		}
 		return weights;
 	};
+	
+	this.obtainSentencesWeights = function(sentences, weights){
+		var result = new Array();
+		for(var i = 0; i < sentences.length; i++){
+			var sentence = sentences[i];
+			var innerWords = this.itemize(sentence);
+			if(innerWords != null){		
+				var value = 0;				
+				for(var j = 0; j < innerWords.length; j++){
+					value += weights[innerWords[j]];
+				}				
+				var sentenceWeight = new Object();
+				sentenceWeight.sentence = sentence;
+				sentenceWeight.weight = value;
+				
+				result.push(sentenceWeight);
+			}
+		}
+		
+		return result;
+	};
 
 }
 
@@ -76,7 +101,8 @@ AutomaticSummarizer.prototype = {
 	summarize : function(text) {
 		var words = this.itemize(text);
 		var weights = this.pageRank(words);
+		var sentences = this.obtainSentencesWeights(text.split('.'), weights);	
 
-		return weights;
+		return sentences;
 	}
 };
