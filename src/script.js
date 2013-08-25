@@ -16,12 +16,12 @@ $(document).ready(function() {
 });
 
 /* ***************************************** */
-/* 				AUTOMATICSUMMARIZER 		 */
+/*              AUTOMATICSUMMARIZER          */
 /* ***************************************** */
 function AutomaticSummarizer() {
 
 	/* ************************************ */
-	/*			PRIVATE FUNCTIONS			*/			
+	/*           PRIVATE FUNCTIONS          */			
 	/* ************************************ */
 	this.itemize = function(text) {
 		//Regexp for itemize
@@ -68,7 +68,8 @@ function AutomaticSummarizer() {
 			if (i > 1) {
 				//if it is not the second word
 				var before2 = words[i - 2];
-				weights[before2]++;
+				weights[before2]++;
+
 			}
 		}
 		return weights;
