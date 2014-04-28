@@ -32,7 +32,7 @@ salvarezsuar.AutomaticSummarizer = (function() {
   "once","here","there","when","where","why","how","all","any","both","each","few","more","most","other","some","such","no","nor","not","only",
   "own","same","so","than","too","very","one","every","least","less","many","now","ever","never","say","says","said","also","get","go","goes",
   "just","made","make","put","see","seen","whether","like","well","back","even","still","way","take","since","another","however","two","three",
-  "four","five","first","second","new","old","high","long"];
+  "four","five","first","second","new","old","high","long","t"];
 
   var itemize = function(text) {
     //Regexp for itemize
@@ -71,10 +71,24 @@ salvarezsuar.AutomaticSummarizer = (function() {
     return _.reduce(links, function(memo, link){ return memo + words[word][link]; }, 0);
   };
 
+  var getSentencesWithRelatedWeigth = function(sentences, weights) {
+    var results  = _.map(sentences, function(sentence){
+      var words  = itemize(sentence);
+      var weight = _.reduce(words, function(memo, word){
+        var pageRank = _.find(weights, function(e){ return e.word === word; });
+        return memo + (pageRank ? pageRank.total : 0);
+      }, 0);
+      return { sentence: sentence, weight: weight };
+    });
+
+    return _.sortBy(results, function(rank) { return rank.weight; }).reverse();
+  };
+
   var summarize = function(text) {
     var words = itemize(text);
     var weights = pageRank(words);
-    return weights;
+    var sentences = text.split(".");
+    return getSentencesWithRelatedWeigth(sentences, weights);
   };
 
   return {

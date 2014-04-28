@@ -22,8 +22,8 @@
           var summarizer = salvarezsuar.AutomaticSummarizer;
           var ranking = summarizer.summarize(text).slice(0, 10);
           for(var i = 0; i < ranking.length; i++){
-            var word = ranking[i];
-            $("#results ul").append("<li>" + word.word + " - " + word.total + "</li>");
+            var sentence = ranking[i];
+            $("#results ul").append("<li>" + sentence.sentence + " - " + sentence.weight + "</li>");
           }
         });
       });
@@ -43,7 +43,7 @@
       <textarea id="source" rows="20" cols="80" maxlength="5000" placeholder="Introduce the text to summarize..." ></textarea>
       <button id="btSummarize">Summarize</button>
       <div id="results">
-        <h2>Top 10 most important words</h2>
+        <h2>Top 10 most important sentences</h2>
         <ul>
         </ul>
       </div>
