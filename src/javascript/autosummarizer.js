@@ -107,7 +107,7 @@ salvarezsuar.AutomaticSummarizer = (function() {
       return { sentence: sentence, weight: weight };
     });
 
-    return _.sortBy(results, function(rank) { return rank.weight; }).reverse();
+    return results;
   };
 
   var summarize = function(text) {

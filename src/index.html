@@ -14,23 +14,37 @@
     <script type="text/javascript" src="./javascript/autosummarizer.js"></script>
     <script>
       $(document).ready(function() {
-        $("#btSummarize").click(function() {
-          //Cleaning the results
-          $("#results ul").empty();
+        $('#btSummarize').click(function() {
+          $('.results').empty();
 
-          var text = $("#source").val();
+          var text = $('#source').val();
           var summarizer = salvarezsuar.AutomaticSummarizer;
-          var ranking = summarizer.summarize(text).slice(0, 10);
-          for(var i = 0; i < ranking.length; i++){
-            var sentence = ranking[i];
-            $("#results ul").append("<li>" + sentence.sentence + " - " + sentence.weight + "</li>");
-          }
+          var ranking = summarizer.summarize(text);
+          var maxWeight = _.max(ranking, function(rank){ return rank.weight; }).weight;
+          var treshold = maxWeight * 0.5;
+
+          var $summary = $('<p></p>');
+          _.each(ranking, function(rank){
+            var sentence = rank.sentence + ".";
+            var weight = rank.weight;
+            if(weight > treshold) {
+              var $highlight = $('<span></span>');
+              $highlight.text(sentence);
+              $highlight.addClass('highlight');
+              $summary.append($highlight);
+            } else {
+              $summary.append(sentence)
+            }
+          });
+
+          $('.results').append($summary);
         });
       });
     </script>
 
     <style>
       button { display: block; }
+      .highlight { background-color: yellow; }
     </style>
   </head>
 
@@ -42,11 +56,7 @@
     <section>
       <textarea id="source" rows="20" cols="80" maxlength="5000" placeholder="Introduce the text to summarize..." ></textarea>
       <button id="btSummarize">Summarize</button>
-      <div id="results">
-        <h2>Top 10 most important sentences</h2>
-        <ul>
-        </ul>
-      </div>
+      <div class="results"></div>
     </section>
     <footer>
       <p>
